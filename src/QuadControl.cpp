@@ -172,23 +172,22 @@ V3F QuadControl::RollPitchControl(V3F accelCmd, Quaternion<float> attitude, floa
     float bx_m = R13;
     float by_m = R23;
 
-    float c_mps2 = collThrustCmd / this->mass;
+    float c_mps2 = -collThrustCmd / this->mass;
     float bx_c = CONSTRAIN(accelCmd.x / c_mps2, -this->maxTiltAngle, this->maxTiltAngle);
     float by_c = CONSTRAIN(accelCmd.y / c_mps2, -this->maxTiltAngle, this->maxTiltAngle);
 
-    V3F bc(bx_c, by_c, 0.0F); // vector of commanded orientations
-    V3F bm(bx_m, by_m, 0.0F); // vector of measured orientations
+    float bxError = bx_c - bx_m;
+    float byError = by_c - by_m;
 
-    V3F bError = bc - bm; // error vector
-
-    V3F bcDot = this->kpBank * bError;
+    float bxDot_c = this->kpBank * bxError;
+    float byDot_c = this->kpBank * byError;
 
     // convert the commanded orientation rates from inertial frame to body frame
 
-    pqrCmd.x = (R21 * bcDot.x) - (R11 * bcDot.y);
+    pqrCmd.x = (R21 * bxDot_c) - (R11 * byDot_c);
     pqrCmd.x /= R33;
 
-    pqrCmd.y = (R22 * bcDot.x) - (R12 * bcDot.y);
+    pqrCmd.y = (R22 * bxDot_c) - (R12 * byDot_c);
     pqrCmd.y /= R33;
 
     pqrCmd.z = 0.0F;
@@ -275,19 +274,21 @@ V3F QuadControl::LateralPositionControl(V3F posCmd, V3F velCmd, V3F pos, V3F vel
 
     ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
 
-//    velCmd.x = CONSTRAIN(velCmd.x, -this->maxSpeedXY, this->maxSpeedXY);
-//    velCmd.y = CONSTRAIN(velCmd.y, -this->maxSpeedXY, this->maxSpeedXY);
+    velCmd.x = CONSTRAIN(velCmd.x, -this->maxSpeedXY, this->maxSpeedXY);
+    velCmd.y = CONSTRAIN(velCmd.y, -this->maxSpeedXY, this->maxSpeedXY);
 
-//    float xAccelCmd_mps2 = this->kpPosXY * (posCmd.x - pos.x) + this->kpVelXY * (velCmd.x - vel.x);
-//    float yAccelCmd_mps2 = this->kpPosXY * (posCmd.y - pos.y) + this->kpVelXY * (velCmd.y - vel.y);
+    float xAccelCmd_mps2 = this->kpPosXY * (posCmd.x - pos.x) + this->kpVelXY * (velCmd.x - vel.x);
+    float yAccelCmd_mps2 = this->kpPosXY * (posCmd.y - pos.y) + this->kpVelXY * (velCmd.y - vel.y);
 
-//    // accumulate to consider the feedforward term from initialization
+    // accumulate to consider the feedforward term from initialization
 
-//    accelCmd.x += xAccelCmd_mps2;
-//    accelCmd.y += yAccelCmd_mps2;
+    accelCmd.x += xAccelCmd_mps2;
+    accelCmd.y += yAccelCmd_mps2;
 
-//    accelCmd.x = CONSTRAIN(accelCmd.x, -this->maxAccelXY, this->maxAccelXY);
-//    accelCmd.y = CONSTRAIN(accelCmd.y, -this->maxAccelXY, this->maxAccelXY);
+    accelCmd.x = CONSTRAIN(accelCmd.x, -this->maxAccelXY, this->maxAccelXY);
+    accelCmd.y = CONSTRAIN(accelCmd.y, -this->maxAccelXY, this->maxAccelXY);
+
+    accelCmd.z = 0.0F;
 
     /////////////////////////////// END STUDENT CODE ////////////////////////////
 
@@ -310,10 +311,11 @@ float QuadControl::YawControl(float yawCmd, float yaw)
     float yawRateCmd=0;
     ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
 
-//    float yawError_rad = yawCmd - yaw;
-//    yawRateCmd = this->kpYaw * yawError_rad;
+    float yawError_rad = yawCmd - yaw;
+    yawError_rad = fmodf(yawError_rad, 2.0F * F_PI);
+    yawRateCmd = this->kpYaw * yawError_rad;
 
-//    yawRateCmd = ConstrainAngle(yawRateCmd, 2.0F * F_PI);
+    //yawRateCmd = ConstrainAngle(yawRateCmd, 2.0F * F_PI);
 
     /////////////////////////////// END STUDENT CODE ////////////////////////////
 

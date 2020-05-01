@@ -295,6 +295,15 @@ V3F QuadControl::LateralPositionControl(V3F posCmd, V3F velCmd, V3F pos, V3F vel
     return accelCmd;
 }
 
+double constrainAngle(double x)
+{
+    // limit angle between [-pi, pi]
+    x = fmodf(x + M_PI, 2 * M_PI);
+    if (x < 0)
+        x += 2 * M_PI;
+    return x - M_PI;
+}
+
 // returns desired yaw rate
 float QuadControl::YawControl(float yawCmd, float yaw)
 {
@@ -311,8 +320,12 @@ float QuadControl::YawControl(float yawCmd, float yaw)
     float yawRateCmd=0;
     ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
 
+    yawCmd = constrainAngle(yawCmd); // limit angle between [-pi, pi]
+
     float yawError_rad = yawCmd - yaw;
-    yawError_rad = fmodf(yawError_rad, 2.0F * F_PI);
+
+    yawError_rad = constrainAngle(yawError_rad); // limit angle between [-pi, pi]
+
     yawRateCmd = this->kpYaw * yawError_rad;
 
     /////////////////////////////// END STUDENT CODE ////////////////////////////

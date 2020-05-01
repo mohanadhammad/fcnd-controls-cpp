@@ -315,24 +315,10 @@ float QuadControl::YawControl(float yawCmd, float yaw)
     yawError_rad = fmodf(yawError_rad, 2.0F * F_PI);
     yawRateCmd = this->kpYaw * yawError_rad;
 
-    //yawRateCmd = ConstrainAngle(yawRateCmd, 2.0F * F_PI);
-
     /////////////////////////////// END STUDENT CODE ////////////////////////////
 
     return yawRateCmd;
 
-}
-
-float QuadControl::ConstrainAngle(float x, float ang_rad)
-{
-    x = fmodf(x, ang_rad);
-
-    if (x < 0)
-    {
-        x += ang_rad;
-    }
-
-    return x;
 }
 
 VehicleCommand QuadControl::RunControl(float dt, float simTime)

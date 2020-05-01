@@ -40,8 +40,6 @@ public:
 
     float AltitudeControl(float posZCmd, float velZCmd, float posZ, float velZ, Quaternion<float> attitude, float accelZCmd, float dt);
 
-    float ConstrainAngle(float x, float ang_rad);
-
     // -------------- PARAMETERS --------------
 
     // controller gains

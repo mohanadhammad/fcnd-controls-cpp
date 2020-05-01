@@ -535,3 +535,28 @@ VehicleCommand QuadControl::GenerateMotorCommands(float collThrustCmd, V3F momen
     return cmd;
 }
 ```
+
+8. Tunings:
+
+
+| Controller | Proportional Gain (Kp) | Integral Gain (Ki) | Derivative Gain (Kd) |
+|------------|-------------------|---------------|-----------------|
+|Body Rate Controller| p: 40, q: 40, r: 10 | - | - |
+|Roll/Pitch Controller| 11 | - | - |
+|Altitude Controller| 20 | 20 | 5 |
+|Lateral Controller| 20 | - | 9 |
+|Yaw Controller| 2 | - | - |
+
+9. Results:
+
+Scenario 2: 
+![scenario_2](./images/results/scenario_2.png)
+
+Scenario 3:
+![scenario_3](./images/results/scenario_3.png)
+
+Scenario 4:
+![scenario_4](./images/results/scenario_4.png)
+
+Scenario 5:
+![scenario_5](./images/results/scenario_5.png)
